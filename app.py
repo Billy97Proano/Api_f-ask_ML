@@ -19,13 +19,13 @@ modelo = pickle.load(open('modelo.sav', 'rb'))
 def predict():
 
     #cargar datos 
-    
     df = request.get_json()
     print(df)
 
     #Realizamos el escalado de los datos 
     ss = StandardScaler()
     df = ss.fit_transform(df)
+    print(df)
     df = pd.DataFrame(df)
     print(df)
 
@@ -34,7 +34,7 @@ def predict():
 
     prediccion = map(modelo.labels_)
 
-    return prediccion
+    return 'OK'
         
     
 
