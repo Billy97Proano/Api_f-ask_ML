@@ -1,8 +1,10 @@
 from crypt import methods
+import json
 from flask import Flask, request
 from sklearn.preprocessing import StandardScaler
 import pandas as pd 
 import pickle
+from pandas import json_normalize
 
 
 app = Flask(__name__)
@@ -21,20 +23,23 @@ def predict():
     #cargar datos 
     df = request.get_json()
     print(df)
+    
+    df_convertido = json_normalize(df['Datos'])
+    print(df_convertido.info())
 
     #Realizamos el escalado de los datos 
     ss = StandardScaler()
-    df = ss.fit_transform(df)
-    print(df)
-    df = pd.DataFrame(df)
+    df_predecir = ss.fit_transform(df_convertido)
+    print(df_predecir)
+    df= pd.DataFrame(df_predecir)
     print(df)
 
     #predecimos a que grupo pertenece
-    modelo.fit(df)
+    modelo.fit(df_predecir)
 
-    prediccion = map(modelo.labels_)
+    prediccion = modelo.labels_
 
-    return 'OK'
+    return prediccion
         
     
 
