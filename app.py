@@ -6,7 +6,6 @@ import pandas as pd
 import pickle
 from pandas import json_normalize
 
-
 app = Flask(__name__)
 
 @app.route('/')
@@ -15,10 +14,13 @@ def hello_world():
     return 'Hello world '
 
 
-modelo = pickle.load(open('modelo.sav', 'rb'))
 
-@app.route('/predict', methods=['POST'])
+
+@app.route('/predict', methods=['POST', 'GET'])
 def predict():
+
+    #cargamos el modelo 
+    modelo = pickle.load(open('modelo.sav', 'rb'))
 
     #cargar datos 
     df = request.get_json()
@@ -34,12 +36,33 @@ def predict():
     df= pd.DataFrame(df_predecir)
     print(df)
 
+    #Calculamos la distancia 
+    #distancia = hopkins(df, df.shape[0])
+    #print(distancia)
+
     #predecimos a que grupo pertenece
-    modelo.fit(df_predecir)
+    prediccion = modelo.predict(df_predecir)
+    #print("prediccion" + prediccion)
 
-    prediccion = modelo.labels_
-
-    return prediccion
+    if(prediccion.any() == 0 ):
+         return {
+        'grupo': 'Motorcycle rider'
+    }
+    
+    elif(prediccion.any() == 1 ):
+         return {
+        'grupo': 'Pedestrian'
+    }
+    
+    elif(prediccion.any() == 2 ):
+         return {
+        'grupo': 'Driver'
+    }
+    
+    elif(prediccion.any() == 3 ):
+         return {
+        'grupo': 'Pedal cyclist'
+    }   
         
     
 
